@@ -1,0 +1,6 @@
+debian/tmp/usr/sbin/*
+debian/tmp/etc/*
+debian/tmp/usr/share/man/*
+debian/tmp/usr/share/monkey/*
+debian/tmp/usr/lib/monkey/*
+debian/tmp/lib/systemd/*

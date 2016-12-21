@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+mkdir -p /var/log/monkey
+chown www-data:www-data /var/log/monkey
+chmod 0750 /var/log/monkey
+touch /var/log/monkey/master.log
+chown www-data:www-data /var/log/monkey/master.log
+
+#DEBHELPER#
+
+exit 0
