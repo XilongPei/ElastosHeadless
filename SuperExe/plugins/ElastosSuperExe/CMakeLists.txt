@@ -18,6 +18,8 @@ add_definitions(-std=c++0x -fpermissive -Wno-permissive)
 
 
 set(src
+    SuperExeMain.cpp
+
     ElastosRuntime/reflection/CClsModule.cpp
     ElastosRuntime/reflection/CObjInfoList.cpp
     ElastosRuntime/reflection/CEntryList.cpp
