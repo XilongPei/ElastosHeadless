@@ -2,68 +2,69 @@
 #ref a makefile for Android: ElastosRuntime/reflection/rules.mk
 #
 
-include_directories(Runtime/Core/inc)
-include_directories(Runtime/Library/inc/eltypes)
-include_directories(Runtime/Library/inc/car)
-include_directories(Runtime/Library/inc/elasys)
-include_directories(Runtime/Library/inc/clsmodule)
-include_directories(Runtime/Library/syscar)
-include_directories(rdk/inc)
-include_directories(rdk/PortingLayer)
-include_directories(ElRuntimeAPI)
+include_directories(ElastosRuntime/Runtime/Core/inc)
+include_directories(ElastosRuntime/Runtime/Library/inc/eltypes)
+include_directories(ElastosRuntime/Runtime/Library/inc/car)
+include_directories(ElastosRuntime/Runtime/Library/inc/elasys)
+include_directories(ElastosRuntime/Runtime/Library/inc/clsmodule)
+include_directories(ElastosRuntime/Runtime/Library/syscar)
+include_directories(ElastosRuntime/rdk/inc)
+include_directories(ElastosRuntime/rdk/PortingLayer)
+include_directories(ElastosRuntime/ElRuntimeAPI)
 
 #MODULE_CPPFLAGS := -std=c++11
 
+add_definitions(-std=c++0x -fpermissive -Wno-permissive)
+
+
 set(src
-    reflection/CClsModule.cpp
-    reflection/CObjInfoList.cpp
-    reflection/CEntryList.cpp
-    reflection/refutil.cpp
-    reflection/reflection.cpp
-    reflection/CArgumentList.cpp
-    #reflection/CCallbackArgumentList.cpp
-    #reflection/CCallbackMethodInfo.cpp
-    reflection/CCarArrayInfo.cpp
-    reflection/CVariableOfCarArray.cpp
-    reflection/CClassInfo.cpp
-    reflection/CConstantInfo.cpp
-    reflection/CConstructorInfo.cpp
-    reflection/CCppVectorInfo.cpp
-    #reflection/CDelegateProxy.cpp
-    reflection/CEnumInfo.cpp
-    reflection/CEnumItemInfo.cpp
-    reflection/CFieldInfo.cpp
-    reflection/CInterfaceInfo.cpp
-    reflection/CIntrinsicInfo.cpp
-    reflection/CLocalPtrInfo.cpp
-    reflection/CLocalTypeInfo.cpp
-    reflection/CMethodInfo.cpp
-    reflection/CModuleInfo.cpp
-    reflection/CParamInfo.cpp
-    reflection/CStructInfo.cpp
-    reflection/CVariableOfStruct.cpp
-    reflection/CVariableOfCppVector.cpp
-    reflection/CTypeAliasInfo.cpp
-    reflection/invoke_gnuc.S
-    reflection/manifest.c
-    reflection/ref_app.cpp
-    reflection/pseudo-dlfcn.cpp
-    reflection/pseudo-misc.cpp
-    Runtime/Library/elasys/sysiids.cpp
-    Runtime/Library/eltypes/elstring/elstring.cpp
-    Runtime/Library/eltypes/elstring/elsharedbuf.cpp
-    Runtime/Library/eltypes/elstringapi.cpp
-    Runtime/Library/elasys/elaatomics.cpp
-    Runtime/Library/eltypes/elquintet.cpp
+    ElastosRuntime/reflection/CClsModule.cpp
+    ElastosRuntime/reflection/CObjInfoList.cpp
+    ElastosRuntime/reflection/CEntryList.cpp
+    ElastosRuntime/reflection/refutil.cpp
+    ElastosRuntime/reflection/reflection.cpp
+    ElastosRuntime/reflection/CArgumentList.cpp
+    #ElastosRuntime/reflection/CCallbackArgumentList.cpp
+    #ElastosRuntime/reflection/CCallbackMethodInfo.cpp
+    ElastosRuntime/reflection/CCarArrayInfo.cpp
+    ElastosRuntime/reflection/CVariableOfCarArray.cpp
+    ElastosRuntime/reflection/CClassInfo.cpp
+    ElastosRuntime/reflection/CConstantInfo.cpp
+    ElastosRuntime/reflection/CConstructorInfo.cpp
+    ElastosRuntime/reflection/CCppVectorInfo.cpp
+    #ElastosRuntime/reflection/CDelegateProxy.cpp
+    ElastosRuntime/reflection/CEnumInfo.cpp
+    ElastosRuntime/reflection/CEnumItemInfo.cpp
+    ElastosRuntime/reflection/CFieldInfo.cpp
+    ElastosRuntime/reflection/CInterfaceInfo.cpp
+    ElastosRuntime/reflection/CIntrinsicInfo.cpp
+    ElastosRuntime/reflection/CLocalPtrInfo.cpp
+    ElastosRuntime/reflection/CLocalTypeInfo.cpp
+    ElastosRuntime/reflection/CMethodInfo.cpp
+    ElastosRuntime/reflection/CModuleInfo.cpp
+    ElastosRuntime/reflection/CParamInfo.cpp
+    ElastosRuntime/reflection/CStructInfo.cpp
+    ElastosRuntime/reflection/CVariableOfStruct.cpp
+    ElastosRuntime/reflection/CVariableOfCppVector.cpp
+    ElastosRuntime/reflection/CTypeAliasInfo.cpp
+    ElastosRuntime/reflection/invoke_gnuc.S
+    ElastosRuntime/reflection/pseudo-dlfcn.cpp
+    ElastosRuntime/reflection/pseudo-misc.cpp
+    ElastosRuntime/Runtime/Library/elasys/sysiids.cpp
+    ElastosRuntime/Runtime/Library/eltypes/elstring/elstring.cpp
+    ElastosRuntime/Runtime/Library/eltypes/elstring/elsharedbuf.cpp
+    ElastosRuntime/Runtime/Library/eltypes/elstringapi.cpp
+    ElastosRuntime/Runtime/Library/elasys/elaatomics.cpp
+    ElastosRuntime/Runtime/Library/eltypes/elquintet.cpp
 
-    ElRuntimeAPI/xni.cpp
-    ElRuntimeAPI/implClassFactory.cpp
+    ElastosRuntime/ElRuntimeAPI/xni.cpp
+    ElastosRuntime/ElRuntimeAPI/implClassFactory.cpp
 
-    #Runtime/Library/clsmodule/reloc.cpp
-    #Runtime/Library/clsmodule/clserr.cpp
-    #Runtime/Library/clsmodule/comprcls.cpp
-    #Runtime/Library/clsmodule/datatype.cpp
-)
+    #ElastosRuntime/Runtime/Library/clsmodule/reloc.cpp
+    #ElastosRuntime/Runtime/Library/clsmodule/clserr.cpp
+    #ElastosRuntime/Runtime/Library/clsmodule/comprcls.cpp
+    #ElastosRuntime/Runtime/Library/clsmodule/datatype.cpp
+    )
 
 #add_subdirectory(ElastosRuntime)
 

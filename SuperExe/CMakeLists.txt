@@ -1,7 +1,7 @@
 # Let's have fun!
 
 cmake_minimum_required(VERSION 2.8)
-project(monkey C)
+project(monkey)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 set(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 
@@ -55,7 +55,7 @@ option(WITH_PLUGIN_LIANA         "Basic network layer"     Yes)
 option(WITH_PLUGIN_LOGGER        "Log Writer"              Yes)
 option(WITH_PLUGIN_MANDRIL       "Security"                Yes)
 option(WITH_PLUGIN_TLS           "TLS/SSL support"          No)
-#option(WITH_PLUGIN_ELASTOSSUPEREXE   "Elastos SuperExe"    Yes)
+option(WITH_PLUGIN_ELASTOSSUPEREXE   "Elastos SuperExe"    Yes)
 
 # Options to build Monkey with/without binary and
 # static/dynamic library modes (default is always just

@@ -179,9 +179,6 @@ EXTERN_C void *getTlSystemSlotBase();
 #define __32BIT(n)              (1ul << (n))
 #define __64BIT(n)              (1ull << (n))
 
-#if 0
-//defined in external/lk/include/stdlib.h
-
 #ifndef MAX
 #define MAX(a, b)               (((a) > (b))? (a) : (b))
 #endif
@@ -195,7 +192,6 @@ EXTERN_C void *getTlSystemSlotBase();
 
 #define ROUNDDOWN(n, size)      (((n) / (size)) * (size))
 #define ROUNDDOWN2(n, size)     ((n) & ~((size) - 1))
-#endif
 
 #define IS_ALIGNMENT(n, size)   (0 == ((size_t)(n) % (size)))
 #define IS_ALIGNMENT2(n, size)  (0 == ((size_t)(n) & ((size) - 1)))

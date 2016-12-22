@@ -1,5 +1,4 @@
 #include <elastos.h>
-#include "trusty_uuid.h"
 
 _ELASTOS_NAMESPACE_USING
 

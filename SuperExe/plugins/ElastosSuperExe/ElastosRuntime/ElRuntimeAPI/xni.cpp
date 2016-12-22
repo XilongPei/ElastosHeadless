@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 // #include <_pubcrt.h>
-#include <trusty_app_manifest.h>
 #include <xni.h>
 
 #define STATUS_WIN32_ERROR(u) ((ECode)((u)|0x80070000))

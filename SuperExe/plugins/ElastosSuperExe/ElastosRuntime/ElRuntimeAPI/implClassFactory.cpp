@@ -3,9 +3,16 @@
 //==========================================================================
 
 #include <elastos.h>
-#include "trusty_uuid.h"
 
 _ELASTOS_NAMESPACE_USING
+
+typedef struct uuid
+{
+    uint32_t time_low;
+    uint16_t time_mid;
+    uint16_t time_hi_and_version;
+    uint8_t clock_seq_and_node[8];
+} uuid_t;
 
 /**
  * ClassFactory

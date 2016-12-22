@@ -5,7 +5,7 @@
 #ifndef __COBJINFOLIST_H__
 #define __COBJINFOLIST_H__
 
-#include <kernel/mutex.h>
+//#include <kernel/mutex.h>
 #include "CClsModule.h"
 
 class CObjInfoList;
@@ -204,7 +204,7 @@ private:
     pthread_mutex_t     mLockDataType;
     pthread_mutex_t     mLockLocal;
     pthread_mutex_t     mLockClsModule;
-#else
+//#else
     mutex_t     mLockTypeAlias;
     mutex_t     mLockEnum;
     mutex_t     mLockClass;

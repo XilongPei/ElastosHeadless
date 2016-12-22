@@ -22,7 +22,7 @@
 #define _NO_INCLIST
 #endif
 #include <_ElastosCore.h>
-#include <callback.h>
+//#include <callback.h>
 #include <carapi.h>
 
 ELAPI ECO_PUBLIC _CReflector_AcquireModuleInfo(
