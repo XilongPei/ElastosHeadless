@@ -5,7 +5,7 @@ set(src
 
 add_executable(monkey-bin ${src})
 target_link_libraries(monkey-bin monkey-core-static)
-set_target_properties(monkey-bin PROPERTIES OUTPUT_NAME monkey)
+set_target_properties(monkey-bin PROPERTIES OUTPUT_NAME ElastosSuperExe)
 
 if(BUILD_LOCAL)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../${CMAKE_CURRENT_BINARY_DIR}/")
