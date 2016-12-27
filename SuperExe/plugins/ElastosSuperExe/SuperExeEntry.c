@@ -180,6 +180,9 @@ int mk_superexe_read_config(char *path)
         return -1;
     }
 
+    mk_api->mem_free(default_file);
+
+    // DIRLISTING
     section = mk_api->config_section_get(conf, "DIRLISTING");
     if (!section) {
         mk_err("Could not find DIRLISTING tag in configuration file");
@@ -194,14 +197,34 @@ int mk_superexe_read_config(char *path)
 
     mk_api->str_build(&dirhtml_conf->theme_path, &len,
                       "%sthemes/%s/", path, dirhtml_conf->theme);
-    mk_api->mem_free(default_file);
 
     if (mk_api->file_get_info(dirhtml_conf->theme_path,
                               &finfo, MK_FILE_READ) != 0) {
-        mk_warn("Dirlisting: cannot load theme from '%s'", dirhtml_conf->theme_path);
-        mk_warn("Dirlisting: unloading plugin");
+        mk_warn("ElastosSuperExe: cannot load theme from '%s'", dirhtml_conf->theme_path);
+        mk_warn("ElastosSuperExe: unloading plugin");
         return -1;
     }
+
+    // CARPATH
+    section = mk_api->config_section_get(conf, "CARPATH");
+    if (!section) {
+        mk_err("Could not find CARPATH tag in configuration file");
+        exit(EXIT_FAILURE);
+    }
+
+    /* alloc dirhtml config struct */
+    superexe_conf = mk_api->mem_alloc(sizeof(struct superexe_config));
+    superexe_conf->path = mk_api->config_section_get_key(section, "Path",
+                                                         MK_RCONF_STR);
+    if (mk_api->file_get_info(superexe_conf->path,
+                              &finfo, MK_FILE_READ) != 0) {
+        mk_warn("ElastosSuperExe: cannot load CAR from '%s'", superexe_conf->path);
+        mk_warn("ElastosSuperExe: unloading plugin");
+
+        //if plugins cann't be loaded, the program will exit()
+        return -1;
+    }
+
 
     mk_api->config_free(conf);
     return 0;
@@ -746,7 +769,7 @@ int mk_dirhtml_init(struct mk_http_session *cs, struct mk_http_request *sr)
     struct mk_dirhtml_request *request;
 
 //    if (!(dir = opendir(sr->real_path.data))) {
-    if (!(dir = opendir("/home/xilong/work/Elastos5/"))) {
+    if (!(dir = opendir(superexe_conf->path))) {
         return -1;
     }
 
@@ -765,7 +788,7 @@ int mk_dirhtml_init(struct mk_http_session *cs, struct mk_http_request *sr)
     sr->handler_data = request;
 
     //request->file_list = mk_dirhtml_create_list(dir, sr->real_path.data,
-    request->file_list = mk_dirhtml_create_list(dir, "/home/xilong/work/Elastos5/",
+    request->file_list = mk_dirhtml_create_list(dir, superexe_conf->path,
                                                 &request->toc_len);
 
     /* Building headers */
@@ -862,6 +885,10 @@ int mk_superexe_plugin_exit()
     mk_api->mem_free(dirhtml_conf->theme);
     mk_api->mem_free(dirhtml_conf->theme_path);
     mk_api->mem_free(dirhtml_conf);
+
+    mk_api->mem_free(superexe_conf->path);
+    mk_api->mem_free(superexe_conf);
+
     return 0;
 }
 

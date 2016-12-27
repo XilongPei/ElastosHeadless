@@ -84,6 +84,12 @@ struct dirhtml_config
     char *theme_path;
 };
 
+// Main configuration of Elastos SuperExe
+struct superexe_config
+{
+    char *path;
+};
+
 /* Represent a request context */
 struct mk_dirhtml_request
 {
@@ -116,6 +122,7 @@ extern const mk_ptr_t mk_iov_dash;
 
 /* Global config */
 struct dirhtml_config *dirhtml_conf;
+struct superexe_config *superexe_conf;
 
 /* Used to keep splitted content of every template */
 struct dirhtml_template
