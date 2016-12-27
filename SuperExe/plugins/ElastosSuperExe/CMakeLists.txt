@@ -18,7 +18,8 @@ add_definitions(-std=c++0x -fpermissive -Wno-permissive)
 
 
 set(src
-    SuperExeMain.cpp
+    SuperExeStaticMain.cpp
+    SuperExeEntry.c
 
     ElastosRuntime/reflection/CClsModule.cpp
     ElastosRuntime/reflection/CObjInfoList.cpp
@@ -71,3 +72,6 @@ set(src
 #add_subdirectory(ElastosRuntime)
 
 MONKEY_PLUGIN(ElastosSuperExe "${src}")
+
+add_subdirectory(conf)
+

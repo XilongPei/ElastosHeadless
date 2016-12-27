@@ -8,3 +8,4 @@
 
 [PLUGINS]
 @MK_LOAD_PLUGINS@
+    Load /home/xilong/ElastosHeadless/SuperExe/build/lib/monkey/monkey-ElastosSuperExe.so

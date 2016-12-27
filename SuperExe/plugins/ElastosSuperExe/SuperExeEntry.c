@@ -27,7 +27,7 @@
  */
 
 #include <monkey/mk_api.h>
-#include "dirlisting.h"
+#include "SuperExeEntry.h"
 
 #include <time.h>
 #include <dirent.h>
@@ -140,7 +140,7 @@ static struct mk_list *mk_dirhtml_create_list(DIR * dir, char *path,
 }
 
 /* Read dirhtml config and themes */
-int mk_dirhtml_conf(char *confdir)
+int mk_superexe_conf(char *confdir)
 {
     int ret = 0;
     unsigned long len;
@@ -149,7 +149,7 @@ int mk_dirhtml_conf(char *confdir)
     mk_api->str_build(&conf_file, &len, "%s", confdir);
 
     /* Read configuration */
-    ret = mk_dirhtml_read_config(conf_file);
+    ret = mk_superexe_read_config(conf_file);
     if (ret < 0) {
         mk_mem_free(conf_file);
         return -1;
@@ -163,10 +163,10 @@ int mk_dirhtml_conf(char *confdir)
 }
 
 /*
- * Read the main configuration file for dirhtml: dirhtml.conf,
+ * Read the main configuration file for superexe: superexe.conf,
  * it will alloc the dirhtml_conf struct
 */
-int mk_dirhtml_read_config(char *path)
+int mk_superexe_read_config(char *path)
 {
     unsigned long len;
     char *default_file = NULL;
@@ -174,7 +174,7 @@ int mk_dirhtml_read_config(char *path)
     struct mk_rconf_section *section;
     struct file_info finfo;
 
-    mk_api->str_build(&default_file, &len, "%sdirhtml.conf", path);
+    mk_api->str_build(&default_file, &len, "%sElastosSuperExe.conf", path);
     conf = mk_api->config_create(default_file);
     if (!conf) {
         return -1;
@@ -745,9 +745,8 @@ int mk_dirhtml_init(struct mk_http_session *cs, struct mk_http_request *sr)
     struct mk_f_list *entry;
     struct mk_dirhtml_request *request;
 
-mk_info("------------------------ %s\n", sr->real_path.data);
-
-    if (!(dir = opendir(sr->real_path.data))) {
+//    if (!(dir = opendir(sr->real_path.data))) {
+    if (!(dir = opendir("/home/xilong/work/Elastos5/"))) {
         return -1;
     }
 
@@ -765,7 +764,8 @@ mk_info("------------------------ %s\n", sr->real_path.data);
     request->iov_footer = NULL;
     sr->handler_data = request;
 
-    request->file_list = mk_dirhtml_create_list(dir, sr->real_path.data,
+    //request->file_list = mk_dirhtml_create_list(dir, sr->real_path.data,
+    request->file_list = mk_dirhtml_create_list(dir, "/home/xilong/work/Elastos5/",
                                                 &request->toc_len);
 
     /* Building headers */
@@ -850,14 +850,14 @@ mk_info("------------------------ %s\n", sr->real_path.data);
     return 0;
 }
 
-int mk_dirlisting_plugin_init(struct plugin_api **api, char *confdir)
+int mk_superexe_plugin_init(struct plugin_api **api, char *confdir)
 {
     mk_api = *api;
 
-    return mk_dirhtml_conf(confdir);
+    return mk_superexe_conf(confdir);
 }
 
-int mk_dirlisting_plugin_exit()
+int mk_superexe_plugin_exit()
 {
     mk_api->mem_free(dirhtml_conf->theme);
     mk_api->mem_free(dirhtml_conf->theme_path);
@@ -865,7 +865,7 @@ int mk_dirlisting_plugin_exit()
     return 0;
 }
 
-int mk_dirlisting_stage30(struct mk_plugin *plugin,
+int mk_superexe_stage30(struct mk_plugin *plugin,
                           struct mk_http_session *cs,
                           struct mk_http_request *sr,
                           int n_param,
@@ -875,18 +875,17 @@ int mk_dirlisting_stage30(struct mk_plugin *plugin,
     (void) n_param;
     (void) params;
 
-mk_info("-=====----------------------- %d URI:%s\n QUERY_STR:%s\nrel_path:%s\n", n_param, sr->uri.data, sr->query_string.data, sr->real_path.data);
-
-    /* validate file_info */
+/*return MK_PLUGIN_RET_CLOSE_CONX;
+    // validate file_info
     if (sr->file_info.size == 0) {
         return MK_PLUGIN_RET_NOT_ME;
     }
 
-    /* This plugin just handle directories */
+    // This plugin just handle directories
     if (sr->file_info.is_directory == MK_FALSE) {
         return MK_PLUGIN_RET_NOT_ME;
     }
-
+*/
     PLUGIN_TRACE("Dirlisting attending socket %i", cs->socket);
     if (mk_dirhtml_init(cs, sr)) {
         /*
@@ -900,7 +899,7 @@ mk_info("-=====----------------------- %d URI:%s\n QUERY_STR:%s\nrel_path:%s\n",
     return MK_PLUGIN_RET_END;
 }
 
-int mk_dirlisting_stage30_hangup(struct mk_plugin *plugin,
+int mk_superexe_stage30_hangup(struct mk_plugin *plugin,
                                  struct mk_http_session *cs,
                                  struct mk_http_request *sr)
 {
@@ -913,26 +912,26 @@ int mk_dirlisting_stage30_hangup(struct mk_plugin *plugin,
     return 0;
 }
 
-struct mk_plugin_stage mk_plugin_stage_dirlisting = {
-    .stage30        = &mk_dirlisting_stage30,
-    .stage30_hangup = &mk_dirlisting_stage30_hangup
+struct mk_plugin_stage mk_plugin_stage_ElastosSuperExe = {
+    .stage30        = &mk_superexe_stage30,
+    .stage30_hangup = &mk_superexe_stage30_hangup
 };
 
-struct mk_plugin mk_plugin_dirlisting = {
+struct mk_plugin mk_plugin_ElastosSuperExe = {
     /* Identification */
-    .shortname     = "dirlisting",
-    .name          = "Directory Listing",
+    .shortname     = "ElastosSuperExe",
+    .name          = "Elastos SuperExe Entry",
     .version       = MK_VERSION_STR,
     .hooks         = MK_PLUGIN_STAGE,
 
     /* Init / Exit */
-    .init_plugin   = mk_dirlisting_plugin_init,
-    .exit_plugin   = mk_dirlisting_plugin_exit,
+    .init_plugin   = mk_superexe_plugin_init,
+    .exit_plugin   = mk_superexe_plugin_exit,
 
     /* Init Levels */
     .master_init   = NULL,
     .worker_init   = NULL,
 
     /* Type */
-    .stage         = &mk_plugin_stage_dirlisting
+    .stage         = &mk_plugin_stage_ElastosSuperExe
 };

@@ -109,6 +109,8 @@ static int do_cgi(const char *const __restrict__ file,
     int writepipe[2], readpipe[2];
     (void) plugin;
 
+mk_info("===============================================================\n");
+
     /* Unchanging env vars */
     env[0] = "PATH_INFO=";
     env[1] = "GATEWAY_INTERFACE=CGI/1.1";
