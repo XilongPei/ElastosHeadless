@@ -914,6 +914,29 @@ int mk_superexe_stage30(struct mk_plugin *plugin,
     }
 */
     PLUGIN_TRACE("Dirlisting attending socket %i", cs->socket);
+
+    //mk_info("sr->query_string:%s sr->real_path:%s\n", sr->query_string.data, sr->real_path.data);
+
+    int pos;
+
+    pos = mk_api->str_search(sr->real_path.data, "//superexe/", 0);
+    if (pos > 0) {
+        superexe_conf->car_name = mk_api->str_dup(sr->real_path.data + pos + sizeof("//superexe/") - 1);
+    }
+
+    if (sr->query_string.data == NULL) {
+        superexe_conf->query_string = NULL;
+    } else {
+        pos = mk_api->str_char_search(sr->query_string.data, ' ', -1);
+        if (pos > 0) {
+            superexe_conf->query_string = mk_api->str_copy_substr(sr->query_string.data ,0, pos);
+        } else {
+            superexe_conf->query_string = mk_api->str_dup(sr->query_string.data);
+        }
+    }
+
+    //mk_info("car_name:%s\nquery_string:%s\n", superexe_conf->car_name, superexe_conf->query_string);
+
     if (mk_dirhtml_init(cs, sr)) {
         /*
          * If we failed here, we cannot return RET_END - that causes a mk_bug.

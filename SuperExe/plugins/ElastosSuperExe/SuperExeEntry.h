@@ -88,6 +88,9 @@ struct dirhtml_config
 struct superexe_config
 {
     char *path;
+
+    char *car_name;
+    char *query_string;
 };
 
 /* Represent a request context */
