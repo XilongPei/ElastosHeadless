@@ -745,8 +745,6 @@ int mk_dirhtml_init(struct mk_http_session *cs, struct mk_http_request *sr)
     struct mk_f_list *entry;
     struct mk_dirhtml_request *request;
 
-mk_info("------------------------ %s\n", sr->real_path.data);
-
     if (!(dir = opendir(sr->real_path.data))) {
         return -1;
     }
@@ -874,8 +872,6 @@ int mk_dirlisting_stage30(struct mk_plugin *plugin,
     (void) plugin;
     (void) n_param;
     (void) params;
-
-mk_info("-=====----------------------- %d URI:%s\n QUERY_STR:%s\nrel_path:%s\n", n_param, sr->uri.data, sr->query_string.data, sr->real_path.data);
 
     /* validate file_info */
     if (sr->file_info.size == 0) {
