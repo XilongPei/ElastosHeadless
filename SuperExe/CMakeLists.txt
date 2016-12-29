@@ -14,8 +14,9 @@ include(ExternalProject)
 include(GNUInstallDirs)
 
 # Set default compiler options
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -Wall -Wextra")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -Wall -Wextra -m32")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
+set(CMAKE_CXX_FLAGS "-m32")
 
 # Monkey Version
 set(MK_VERSION_MAJOR  1)
@@ -219,7 +220,7 @@ endif()
 # ============================================
 
 # Default values for conf/monkey.conf
-set(MK_CONF_LISTEN       "2001")
+set(MK_CONF_LISTEN       "1984")
 set(MK_CONF_WORKERS      "0")
 set(MK_CONF_TIMEOUT      "15")
 set(MK_CONF_PIDFILE      "monkey.pid")
