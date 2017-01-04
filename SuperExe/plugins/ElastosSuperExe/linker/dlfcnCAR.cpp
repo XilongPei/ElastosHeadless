@@ -16,16 +16,35 @@
 
 #include "linker.h"
 
-#include <dlfcn.h>
+#include <dlfcnCAR.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <android/dlext.h>
 
 #include <bionic/pthread_internal.h>
 #include "private/bionic_tls.h"
 #include "private/ScopedPthreadMutexLocker.h"
 #include "private/ThreadLocalBuffer.h"
+
+#include "elf.h"
+
+/////////////////////
+#if defined(__LP64__)
+  #define __RESERVED_INITIALIZER , {0}
+#else
+  #define __RESERVED_INITIALIZER
+#endif
+
+#define  __PTHREAD_MUTEX_INIT_VALUE            0
+#define  __PTHREAD_RECURSIVE_MUTEX_INIT_VALUE  0x4000
+#define  __PTHREAD_ERRORCHECK_MUTEX_INIT_VALUE 0x8000
+
+//#define  PTHREAD_MUTEX_INITIALIZER             {__PTHREAD_MUTEX_INIT_VALUE __RESERVED_INITIALIZER}
+#define  PTHREAD_RECURSIVE_MUTEX_INITIALIZER   {__PTHREAD_RECURSIVE_MUTEX_INIT_VALUE __RESERVED_INITIALIZER}
+#define  PTHREAD_ERRORCHECK_MUTEX_INITIALIZER  {__PTHREAD_ERRORCHECK_MUTEX_INIT_VALUE __RESERVED_INITIALIZER}
+/////////////////////
 
 /* This file hijacks the symbols stubbed out in libdl.so. */
 
@@ -41,16 +60,16 @@ static const char* __bionic_set_dlerror(char* new_value) {
 
 static void __bionic_format_dlerror(const char* msg, const char* detail) {
   char* buffer = __get_thread()->dlerror_buffer;
-  strlcpy(buffer, msg, __BIONIC_DLERROR_BUFFER_SIZE);
+  strncpy(buffer, msg, __BIONIC_DLERROR_BUFFER_SIZE);
   if (detail != NULL) {
-    strlcat(buffer, ": ", __BIONIC_DLERROR_BUFFER_SIZE);
-    strlcat(buffer, detail, __BIONIC_DLERROR_BUFFER_SIZE);
+    strncat(buffer, ": ", __BIONIC_DLERROR_BUFFER_SIZE);
+    strncat(buffer, detail, __BIONIC_DLERROR_BUFFER_SIZE);
   }
 
   __bionic_set_dlerror(buffer);
 }
 
-const char* dlerror() {
+const char* dlerrorCAR() {
   const char* old_value = __bionic_set_dlerror(NULL);
   return old_value;
 }
@@ -79,11 +98,11 @@ void* android_dlopen_ext(const char* filename, int flags, const android_dlextinf
   return dlopen_ext(filename, flags, extinfo);
 }
 
-void* dlopen(const char* filename, int flags) {
+void* dlopenCAR(const char* filename, int flags) {
   return dlopen_ext(filename, flags, NULL);
 }
 
-void* dlsym(void* handle, const char* symbol) {
+void* dlsymCAR(void* handle, const char* symbol) {
   ScopedPthreadMutexLocker locker(&g_dl_mutex);
 
 #if !defined(__LP64__)
@@ -129,7 +148,7 @@ void* dlsym(void* handle, const char* symbol) {
   }
 }
 
-int dladdr(const void* addr, Dl_info* info) {
+int dladdrCAR(const void* addr, Dl_info* info) {
   ScopedPthreadMutexLocker locker(&g_dl_mutex);
 
   // Determine if this address can be found in any library currently mapped.
@@ -154,7 +173,7 @@ int dladdr(const void* addr, Dl_info* info) {
   return 1;
 }
 
-int dlclose(void* handle) {
+int dlcloseCAR(void* handle) {
   ScopedPthreadMutexLocker locker(&g_dl_mutex);
   do_dlclose(reinterpret_cast<soinfo*>(handle));
   // dlclose has no defined errors.
@@ -200,11 +219,11 @@ static ElfW(Sym) g_libdl_symtab[] = {
   // supposed to have st_name == 0, but instead, it points to an index
   // in the strtab with a \0 to make iterating through the symtab easier.
   ELFW(SYM_INITIALIZER)(sizeof(ANDROID_LIBDL_STRTAB) - 1, NULL, 0),
-  ELFW(SYM_INITIALIZER)(  0, &dlopen, 1),
-  ELFW(SYM_INITIALIZER)(  7, &dlclose, 1),
-  ELFW(SYM_INITIALIZER)( 15, &dlsym, 1),
-  ELFW(SYM_INITIALIZER)( 21, &dlerror, 1),
-  ELFW(SYM_INITIALIZER)( 29, &dladdr, 1),
+  ELFW(SYM_INITIALIZER)(  0, &dlopenCAR, 1),
+  ELFW(SYM_INITIALIZER)(  7, &dlcloseCAR, 1),
+  ELFW(SYM_INITIALIZER)( 15, &dlsymCAR, 1),
+  ELFW(SYM_INITIALIZER)( 21, &dlerrorCAR, 1),
+  ELFW(SYM_INITIALIZER)( 29, &dladdrCAR, 1),
   ELFW(SYM_INITIALIZER)( 36, &android_update_LD_LIBRARY_PATH, 1),
   ELFW(SYM_INITIALIZER)( 67, &android_get_LD_LIBRARY_PATH, 1),
   ELFW(SYM_INITIALIZER)( 95, &dl_iterate_phdr, 1),

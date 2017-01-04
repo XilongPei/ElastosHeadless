@@ -39,6 +39,11 @@
 #include <sys/un.h>
 #include <unistd.h>
 
+pid_t gettid(void)
+{
+  return 0;
+}
+
 extern "C" int tgkill(int tgid, int tid, int sig);
 
 #if __LP64__
@@ -286,7 +291,7 @@ static void debuggerd_signal_handler(int signal_number, siginfo_t* info, void*) 
   }
 }
 
-__LIBC_HIDDEN__ void debuggerd_init() {
+void debuggerd_init() {
   struct sigaction action;
   memset(&action, 0, sizeof(action));
   sigemptyset(&action.sa_mask);

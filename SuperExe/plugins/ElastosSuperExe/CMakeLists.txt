@@ -12,6 +12,8 @@ include_directories(ElastosRuntime/rdk/inc)
 include_directories(ElastosRuntime/rdk/PortingLayer)
 include_directories(ElastosRuntime/ElRuntimeAPI)
 
+include_directories(linker/bionic_include)
+
 #MODULE_CPPFLAGS := -std=c++11
 
 add_definitions(-std=c++0x -fpermissive -Wno-permissive)
@@ -51,7 +53,7 @@ set(src
     ElastosRuntime/reflection/CVariableOfCppVector.cpp
     ElastosRuntime/reflection/CTypeAliasInfo.cpp
     ElastosRuntime/reflection/invoke_gnuc.S
-    ElastosRuntime/reflection/pseudo-dlfcn.cpp
+#    ElastosRuntime/reflection/pseudo-dlfcn.cpp
     ElastosRuntime/reflection/pseudo-misc.cpp
     ElastosRuntime/Runtime/Library/elasys/sysiids.cpp
     ElastosRuntime/Runtime/Library/eltypes/elstring/elstring.cpp
@@ -67,11 +69,21 @@ set(src
     #ElastosRuntime/Runtime/Library/clsmodule/clserr.cpp
     #ElastosRuntime/Runtime/Library/clsmodule/comprcls.cpp
     #ElastosRuntime/Runtime/Library/clsmodule/datatype.cpp
+
+    linker/debugger.cpp
+    linker/dlfcnCAR.cpp
+    linker/linker.cpp
+    linker/linker_allocator.cpp
+    linker/linker_environ.cpp
+    linker/linker_phdr.cpp
+    linker/rt.cpp
+    linker/libc_logging.cpp
+
+    #linker has not its own version of crtbegin
+    #linker/arch/x86/begin.c
     )
 
-#add_subdirectory(ElastosRuntime)
+add_subdirectory(conf)
 
 MONKEY_PLUGIN(ElastosSuperExe "${src}")
-
-add_subdirectory(conf)
 

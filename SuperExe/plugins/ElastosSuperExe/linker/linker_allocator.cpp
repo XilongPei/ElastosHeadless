@@ -19,6 +19,7 @@
 #include <unistd.h>
 
 #include "private/bionic_prctl.h"
+#include "string.h"
 
 struct LinkerAllocatorPage {
   LinkerAllocatorPage* next;

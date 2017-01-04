@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 The Android Open Source Project
+ * Copyright (C) 2008 The Android Open Source Project
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,32 +25,58 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#ifndef _ELF_H
+#define _ELF_H
 
-#include <stdint.h>
-#include <sys/cdefs.h>
+#include <linux/auxvec.h>
+#include <linux/elf.h>
+#include <linux/elf-em.h>
 
-extern unsigned __linker_init(void* raw_args);
+#include <machine/elf_machdep.h>
 
-void _start() {
-  void (*start)(void);
+typedef struct {
+  __u32 a_type;
+  union {
+    __u32 a_val;
+  } a_un;
+} Elf32_auxv_t;
 
-  void* raw_args = (void*) ((uintptr_t) __builtin_frame_address(0) + sizeof(void*));
-  start = (void(*)(void))__linker_init(raw_args);
+typedef struct {
+  __u64 a_type;
+  union {
+    __u64 a_val;
+  } a_un;
+} Elf64_auxv_t;
 
-  /* linker init returns (%eax) the _entry address in the main image */
-  /* entry point expects sp to point to raw_args */
+#define DF_ORIGIN     0x00000001
+#define DF_SYMBOLIC   0x00000002
+#define DF_TEXTREL    0x00000004
+#define DF_BIND_NOW   0x00000008
+#define DF_STATIC_TLS 0x00000010
 
-  __asm__ (
-     "mov %0, %%esp\n\t"
-     "jmp *%1\n\t"
-     : : "r"(raw_args), "r"(start) :
-  );
+#define DT_BIND_NOW 24
+#define DT_INIT_ARRAY 25
+#define DT_FINI_ARRAY 26
+#define DT_INIT_ARRAYSZ 27
+#define DT_FINI_ARRAYSZ 28
+#define DT_RUNPATH 29
+#define DT_FLAGS 30
+/* glibc and BSD disagree for DT_ENCODING; glibc looks wrong. */
+#define DT_PREINIT_ARRAY 32
+#define DT_PREINIT_ARRAYSZ 33
 
-  /* Unreachable */
-}
+#define ELFOSABI_SYSV 0 /* Synonym for ELFOSABI_NONE used by valgrind. */
 
-/* Since linker has its own version of crtbegin (this file) it should have */
-/* own version of __stack_chk_fail_local for the case when it's built with */
-/* stack protector feature */
+#define PT_GNU_RELRO 0x6474e552
 
-#include "arch-x86/bionic/__stack_chk_fail_local.h"
+#define STB_LOOS   10
+#define STB_HIOS   12
+#define STB_LOPROC 13
+#define STB_HIPROC 15
+
+#define STT_LOOS   10
+#define STT_HIOS   12
+#define STT_LOPROC 13
+#define STT_HIPROC 15
+
+#endif /* _ELF_H */

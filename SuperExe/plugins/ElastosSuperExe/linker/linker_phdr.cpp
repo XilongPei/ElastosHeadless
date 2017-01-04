@@ -37,6 +37,8 @@
 
 #include "linker.h"
 #include "linker_debug.h"
+#include "string.h"
+#include "limits.h"
 
 /**
   TECHNICAL NOTE ON ELF LOADING.

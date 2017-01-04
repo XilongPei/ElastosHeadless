@@ -34,6 +34,7 @@
 #include <unistd.h>
 
 #include "private/KernelArgumentBlock.h"
+#include "string.h"
 
 static char** _envp;
 static bool _AT_SECURE_value = true;

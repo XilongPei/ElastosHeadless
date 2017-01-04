@@ -26,7 +26,7 @@
  * SUCH DAMAGE.
  */
 
-#include <dlfcn.h>
+#include <dlfcnCAR.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
@@ -113,9 +113,9 @@ static const char* g_ld_preload_names[LDPRELOAD_MAX + 1];
 
 static soinfo* g_ld_preloads[LDPRELOAD_MAX + 1];
 
-__LIBC_HIDDEN__ int g_ld_debug_verbosity;
+int g_ld_debug_verbosity;
 
-__LIBC_HIDDEN__ abort_msg_t* g_abort_message = NULL; // For debuggerd.
+abort_msg_t* g_abort_message = NULL; // For debuggerd.
 
 enum RelocationKind {
     kRelocAbsolute = 0,
@@ -165,10 +165,10 @@ static unsigned bitmask[4096];
     { \
         __libc_fatal("ERROR: " #name " called from the dynamic linker!\n"); \
     }
-DISALLOW_ALLOCATION(void*, malloc, (size_t u __unused));
-DISALLOW_ALLOCATION(void, free, (void* u __unused));
-DISALLOW_ALLOCATION(void*, realloc, (void* u1 __unused, size_t u2 __unused));
-DISALLOW_ALLOCATION(void*, calloc, (size_t u1 __unused, size_t u2 __unused));
+//DISALLOW_ALLOCATION(void*, malloc, (size_t u __unused));
+//DISALLOW_ALLOCATION(void, free, (void* u __unused));
+//DISALLOW_ALLOCATION(void*, realloc, (void* u1 __unused, size_t u2 __unused));
+//DISALLOW_ALLOCATION(void*, calloc, (size_t u1 __unused, size_t u2 __unused));
 
 static char tmp_err_buf[768];
 static char __linker_dl_err_buf[768];
@@ -294,7 +294,7 @@ static soinfo* soinfo_alloc(const char* name, struct stat* file_stat) {
 
   // Initialize the new element.
   memset(si, 0, sizeof(soinfo));
-  strlcpy(si->name, name, sizeof(si->name));
+  strncpy(si->name, name, sizeof(si->name));
   si->flags = FLAG_NEW_SOINFO;
 
   if (file_stat != NULL) {
@@ -354,7 +354,8 @@ static void parse_path(const char* path, const char* delimiters,
     return;
   }
 
-  size_t len = strlcpy(buf, path, buf_size);
+  strncpy(buf, path, buf_size);
+  size_t len = strlen(buf);
 
   size_t i = 0;
   char* buf_p = buf;
@@ -1446,7 +1447,7 @@ static bool mips_relocate_got(soinfo* si, soinfo* needed[]) {
 }
 #endif
 
-void soinfo::CallArray(const char* array_name __unused, linker_function_t* functions, size_t count, bool reverse) {
+void soinfo::CallArray(const char* array_name, linker_function_t* functions, size_t count, bool reverse) {
   if (functions == NULL) {
     return;
   }
@@ -1465,7 +1466,7 @@ void soinfo::CallArray(const char* array_name __unused, linker_function_t* funct
   TRACE("[ Done calling %s for '%s' ]", array_name, name);
 }
 
-void soinfo::CallFunction(const char* function_name __unused, linker_function_t function) {
+void soinfo::CallFunction(const char* function_name, linker_function_t function) {
   if (function == NULL || reinterpret_cast<uintptr_t>(function) == static_cast<uintptr_t>(-1)) {
     return;
   }
@@ -1927,7 +1928,7 @@ static bool soinfo_link_image(soinfo* si, const android_dlextinfo* extinfo) {
             DEBUG("%s needs %s", si->name, library_name);
             soinfo* lsi = find_library(library_name, 0, NULL);
             if (lsi == NULL) {
-                strlcpy(tmp_err_buf, linker_get_error_buffer(), sizeof(tmp_err_buf));
+                strncpy(tmp_err_buf, linker_get_error_buffer(), sizeof(tmp_err_buf));
                 DL_ERR("could not load library \"%s\" needed by \"%s\"; caused by %s",
                        library_name, si->name, tmp_err_buf);
                 return false;
@@ -2034,7 +2035,7 @@ static bool soinfo_link_image(soinfo* si, const android_dlextinfo* extinfo) {
  * It helps to stack unwinding through signal handlers.
  * Also, it makes bionic more like glibc.
  */
-static void add_vdso(KernelArgumentBlock& args __unused) {
+static void add_vdso(KernelArgumentBlock& args) {
 #if defined(AT_SYSINFO_EHDR)
   ElfW(Ehdr)* ehdr_vdso = reinterpret_cast<ElfW(Ehdr)*>(args.getauxval(AT_SYSINFO_EHDR));
   if (ehdr_vdso == NULL) {
@@ -2067,9 +2068,9 @@ static soinfo linker_soinfo_for_gdb;
  */
 static void init_linker_info_for_gdb(ElfW(Addr) linker_base) {
 #if defined(__LP64__)
-  strlcpy(linker_soinfo_for_gdb.name, "/system/bin/linker64", sizeof(linker_soinfo_for_gdb.name));
+  strncpy(linker_soinfo_for_gdb.name, "/system/bin/linker64", sizeof(linker_soinfo_for_gdb.name));
 #else
-  strlcpy(linker_soinfo_for_gdb.name, "/system/bin/linker", sizeof(linker_soinfo_for_gdb.name));
+  strncpy(linker_soinfo_for_gdb.name, "/system/bin/linker", sizeof(linker_soinfo_for_gdb.name));
 #endif
   linker_soinfo_for_gdb.flags = FLAG_NEW_SOINFO;
   linker_soinfo_for_gdb.base = linker_base;

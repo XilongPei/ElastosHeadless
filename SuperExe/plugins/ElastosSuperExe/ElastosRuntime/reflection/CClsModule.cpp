@@ -4,7 +4,7 @@
 
 #include "CClsModule.h"
 #include "CEntryList.h"
-#include <dlfcn.h>
+#include <dlfcnCAR.h>
 
 CClsModule::CClsModule(
     /* [in] */ CLSModule* clsMod,
@@ -44,7 +44,7 @@ CClsModule::~CClsModule()
         if (mClsMod) DisposeFlattedCLS(mClsMod);
     }
     else {
-        if (mModule) dlclose(mModule);
+        if (mModule) dlcloseCAR(mModule);
     }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 The Android Open Source Project
+ * Copyright (C) 2013 The Android Open Source Project
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,31 +26,25 @@
  * SUCH DAMAGE.
  */
 
-#include <stdint.h>
-#include <sys/cdefs.h>
+#ifndef _LIBC_EVENTS_H
+#define _LIBC_EVENTS_H
 
-extern unsigned __linker_init(void* raw_args);
 
-void _start() {
-  void (*start)(void);
+// This is going to be included in assembler code so only allow #define
+// values instead of defining an enum.
 
-  void* raw_args = (void*) ((uintptr_t) __builtin_frame_address(0) + sizeof(void*));
-  start = (void(*)(void))__linker_init(raw_args);
+#define BIONIC_EVENT_MEMCPY_BUFFER_OVERFLOW   80100
+#define BIONIC_EVENT_STRCAT_BUFFER_OVERFLOW   80105
+#define BIONIC_EVENT_MEMMOVE_BUFFER_OVERFLOW  80110
+#define BIONIC_EVENT_STRNCAT_BUFFER_OVERFLOW  80115
+#define BIONIC_EVENT_STRNCPY_BUFFER_OVERFLOW  80120
+#define BIONIC_EVENT_MEMSET_BUFFER_OVERFLOW   80125
+#define BIONIC_EVENT_STRCPY_BUFFER_OVERFLOW   80130
+#define BIONIC_EVENT_STPCPY_BUFFER_OVERFLOW   80135
+#define BIONIC_EVENT_STPNCPY_BUFFER_OVERFLOW  80140
 
-  /* linker init returns (%eax) the _entry address in the main image */
-  /* entry point expects sp to point to raw_args */
+#define BIONIC_EVENT_RESOLVER_OLD_RESPONSE    80300
+#define BIONIC_EVENT_RESOLVER_WRONG_SERVER    80305
+#define BIONIC_EVENT_RESOLVER_WRONG_QUERY     80310
 
-  __asm__ (
-     "mov %0, %%esp\n\t"
-     "jmp *%1\n\t"
-     : : "r"(raw_args), "r"(start) :
-  );
-
-  /* Unreachable */
-}
-
-/* Since linker has its own version of crtbegin (this file) it should have */
-/* own version of __stack_chk_fail_local for the case when it's built with */
-/* stack protector feature */
-
-#include "arch-x86/bionic/__stack_chk_fail_local.h"
+#endif // _LIBC_EVENTS_H

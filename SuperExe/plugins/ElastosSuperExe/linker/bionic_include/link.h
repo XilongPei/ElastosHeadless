@@ -25,32 +25,56 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#ifndef _LINK_H_
+#define _LINK_H_
 
-#include <stdint.h>
-#include <sys/cdefs.h>
+#include <sys/types.h>
+#include <elf.h>
 
-extern unsigned __linker_init(void* raw_args);
+__BEGIN_DECLS
 
-void _start() {
-  void (*start)(void);
+#if __LP64__
+#define ElfW(type) Elf64_ ## type
+#else
+#define ElfW(type) Elf32_ ## type
+#endif
 
-  void* raw_args = (void*) ((uintptr_t) __builtin_frame_address(0) + sizeof(void*));
-  start = (void(*)(void))__linker_init(raw_args);
+struct dl_phdr_info {
+  ElfW(Addr) dlpi_addr;
+  const char* dlpi_name;
+  const ElfW(Phdr)* dlpi_phdr;
+  ElfW(Half) dlpi_phnum;
+};
 
-  /* linker init returns (%eax) the _entry address in the main image */
-  /* entry point expects sp to point to raw_args */
+int dl_iterate_phdr(int (*)(struct dl_phdr_info*, size_t, void*), void*);
 
-  __asm__ (
-     "mov %0, %%esp\n\t"
-     "jmp *%1\n\t"
-     : : "r"(raw_args), "r"(start) :
-  );
+#ifdef __arm__
+typedef long unsigned int* _Unwind_Ptr;
+_Unwind_Ptr dl_unwind_find_exidx(_Unwind_Ptr, int*);
+#endif
 
-  /* Unreachable */
-}
+/* Used by the dynamic linker to communicate with the debugger. */
+struct link_map {
+  ElfW(Addr) l_addr;
+  char* l_name;
+  ElfW(Dyn)* l_ld;
+  struct link_map* l_next;
+  struct link_map* l_prev;
+};
 
-/* Since linker has its own version of crtbegin (this file) it should have */
-/* own version of __stack_chk_fail_local for the case when it's built with */
-/* stack protector feature */
+/* Used by the dynamic linker to communicate with the debugger. */
+struct r_debug {
+  int32_t r_version;
+  struct link_map* r_map;
+  ElfW(Addr) r_brk;
+  enum {
+    RT_CONSISTENT,
+    RT_ADD,
+    RT_DELETE
+  } r_state;
+  ElfW(Addr) r_ldbase;
+};
 
-#include "arch-x86/bionic/__stack_chk_fail_local.h"
+__END_DECLS
+
+#endif /* _LINK_H_ */

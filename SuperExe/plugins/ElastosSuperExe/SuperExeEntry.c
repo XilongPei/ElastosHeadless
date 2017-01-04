@@ -28,10 +28,12 @@
 
 #include <monkey/mk_api.h>
 #include "SuperExeEntry.h"
-
+#include "SuperExeStaticMain.h"
 #include <time.h>
 #include <dirent.h>
 #include <sys/stat.h>
+
+#include <dlfcnCAR.h>
 
 const mk_ptr_t mk_dirhtml_default_mime = mk_ptr_init(MK_DIRHTML_DEFAULT_MIME);
 const mk_ptr_t mk_dir_iov_dash  = mk_ptr_init("-");
@@ -935,7 +937,16 @@ int mk_superexe_stage30(struct mk_plugin *plugin,
         }
     }
 
-    //mk_info("car_name:%s\nquery_string:%s\n", superexe_conf->car_name, superexe_conf->query_string);
+    mk_info("car_name:%s\nquery_string:%s\n", superexe_conf->car_name, superexe_conf->query_string);
+    //mk_info(reflectCAR(superexe_conf->car_name));
+//    if (reflectCAR("/home/xilong/work/Elastos5/Targets/rdk/x86.gnu.android.dbg/bin/Elastos.Runtime.eco") == NULL) {
+    if (dlopenCAR("/home/xilong/work/Elastos5/Targets/rdk/x86.gnu.android.dbg/bin/Elastos.Runtime.eco", 2) == NULL) {
+    //if (dlopen("/home/xilong/work/Elastos5/Build/Prebuilt_x86/Linux/usr/lib/libm.so", 2) == NULL) {
+
+
+        mk_info("xxxxxxxxxxx: %s\n", dlerrorCAR());
+    }
+    mk_info("==========================\n");
 
     if (mk_dirhtml_init(cs, sr)) {
         /*

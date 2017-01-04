@@ -21,8 +21,11 @@
 #include <elastos.h>
 #include <elapi.h>
 
-int main(void)
-{
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int ElastosMain(char *car_name, char *query_string) {
 
      AutoPtr<IModuleInfo> moduleInfo;
      ECode ec = _CReflector_AcquireModuleInfo(String("path"), (IModuleInfo**)&moduleInfo);
@@ -51,3 +54,39 @@ int main(void)
 
 	return 0;
 }
+
+char *reflectCAR(char *moduleName) {
+    ECode ec;
+
+    AutoPtr<IModuleInfo> moduleInfo;
+    ec = _CReflector_AcquireModuleInfo(String(moduleName), (IModuleInfo**)&moduleInfo);
+    if (FAILED(ec)) {
+        return NULL;
+    }
+#if 0
+    AutoPtr<IClassInfo> pClassInfo;
+    ec = pModuleInfo->GetClassInfo(CARClass, &pClassInfo);
+    if (FAILED(ec)) {
+        return NULL;
+    }
+
+    AutoPtr<IConstructorInfo> p;
+    AutuPtr<IMethodInfo> pMethodInfo;
+
+    ec = GetMethodInfoAndInterfaceIndex(pClassInfo, (char*)"JavaObjMoved", &interfaceIndex, &pMethodInfo);
+    if (FAILED(ec)) {
+        return NULL;
+    }
+#endif
+    return "OK";
+
+}
+
+void freeReflectMem(char *reflectInfo) {
+    free(reflectInfo);
+}
+
+
+#ifdef __cplusplus
+}
+#endif

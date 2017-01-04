@@ -20,7 +20,7 @@
 #include "CLocalPtrInfo.h"
 #include "CCallbackMethodInfo.h"
 //#include <pthread.h>
-#include <dlfcn.h>
+#include <dlfcnCAR.h>
 
 typedef
 struct ModuleRsc {
@@ -35,7 +35,7 @@ int dlGetClassInfo(void* handle, void** address, int* size)
     assert(NULL != address);
     assert(NULL != size);
 
-    rsc = (ModuleRsc **)dlsym(handle, "g_pDllResource");
+    rsc = (ModuleRsc **)dlsymCAR(handle, "g_pDllResource");
     if (NULL == rsc) {
         goto E_FAIL_EXIT;
     }
@@ -285,7 +285,7 @@ ECode CObjInfoList::AcquireModuleInfo(
 
     ECode ec = NOERROR;
 
-    void* module = dlopen(name.string(), RTLD_NOW);
+    void* module = dlopenCAR(name.string(), RTLD_NOW);
     if(NULL == module){
         return E_FILE_NOT_FOUND;
     }
@@ -293,7 +293,7 @@ ECode CObjInfoList::AcquireModuleInfo(
     LockHashTable(EntryType_Module);
     IModuleInfo** modInfo = mModInfos.Get(const_cast<char*>(name.string()));
     if (modInfo) {
-        dlclose(module);
+        dlcloseCAR(module);
         *moduleInfo = *modInfo;
         (*moduleInfo)->AddRef();
         UnlockHashTable(EntryType_Module);

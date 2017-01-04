@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 The Android Open Source Project
+ * Copyright (C) 2008 The Android Open Source Project
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,32 +25,57 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#ifndef __DLFCN_H__
+#define __DLFCN_H__
 
-#include <stdint.h>
 #include <sys/cdefs.h>
 
-extern unsigned __linker_init(void* raw_args);
+__BEGIN_DECLS
 
-void _start() {
-  void (*start)(void);
+typedef struct {
+    const char *dli_fname;  /* Pathname of shared object that
+                               contains address */
+    void       *dli_fbase;  /* Address at which shared object
+                               is loaded */
+    const char *dli_sname;  /* Name of nearest symbol with address
+                               lower than addr */
+    void       *dli_saddr;  /* Exact address of symbol named
+                               in dli_sname */
+} Dl_info;
 
-  void* raw_args = (void*) ((uintptr_t) __builtin_frame_address(0) + sizeof(void*));
-  start = (void(*)(void))__linker_init(raw_args);
+extern void*        dlopenCAR(const char*  filename, int flag);
+extern int          dlcloseCAR(void*  handle);
+extern const char*  dlerrorCAR(void);
+extern void*        dlsymCAR(void*  handle, const char*  symbol);
+extern int          dladdrCAR(const void* addr, Dl_info *info);
 
-  /* linker init returns (%eax) the _entry address in the main image */
-  /* entry point expects sp to point to raw_args */
+enum {
+#if defined(__LP64__)
+  RTLD_NOW  = 2,
+#else
+  RTLD_NOW  = 0,
+#endif
+  RTLD_LAZY = 1,
 
-  __asm__ (
-     "mov %0, %%esp\n\t"
-     "jmp *%1\n\t"
-     : : "r"(raw_args), "r"(start) :
-  );
+  RTLD_LOCAL  = 0,
+#if defined(__LP64__)
+  RTLD_GLOBAL = 0x00100,
+#else
+  RTLD_GLOBAL = 2,
+#endif
+  RTLD_NOLOAD = 4,
+};
 
-  /* Unreachable */
-}
+#if defined (__LP64__)
+#define RTLD_DEFAULT  ((void*) 0)
+#define RTLD_NEXT     ((void*) -1L)
+#else
+#define RTLD_DEFAULT  ((void*) 0xffffffff)
+#define RTLD_NEXT     ((void*) 0xfffffffe)
+#endif
 
-/* Since linker has its own version of crtbegin (this file) it should have */
-/* own version of __stack_chk_fail_local for the case when it's built with */
-/* stack protector feature */
+__END_DECLS
 
-#include "arch-x86/bionic/__stack_chk_fail_local.h"
+#endif /* __DLFCN_H */
+
+
