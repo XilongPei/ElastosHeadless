@@ -27,7 +27,7 @@
 #include "private/bionic_tls.h"
 #include "private/ScopedPthreadMutexLocker.h"
 #include "private/ThreadLocalBuffer.h"
-
+#include "linker_debug.h"
 #include "elf.h"
 
 /////////////////////
@@ -272,4 +272,16 @@ soinfo* get_libdl_info() {
   }
 
   return &__libdl_info;
+}
+
+extern "C" void _startLoaderCAR();
+void initLoaderCAR()
+{
+  //init_g_dl_mutex
+  pthread_mutex_init(&g_dl_mutex, NULL);
+
+  //x86 begin.c
+  _startLoaderCAR();
+
+  g_ld_debug_verbosity = 100;
 }

@@ -99,6 +99,13 @@ static const char* const kDefaultLdPaths[] = {
   NULL
 };
 
+static const char* const kIgnoreSymbols[] = {
+  "__cxa_atexit",
+  "__cxa_finalize",
+  "__stack_chk_fail",
+  NULL
+};
+
 #define LDPATH_BUFSIZE (LDPATH_MAX*64)
 #define LDPATH_MAX 8
 
@@ -575,6 +582,13 @@ static ElfW(Sym)* soinfo_do_lookup(soinfo* si, const char* name, soinfo** lsi, s
         }
     }
 
+    // R_386_JUMP_SLOT
+    s = soinfo_elf_lookup(si, elf_hash, name);
+    if (s != NULL) {
+        *lsi = si;
+        goto done;
+    }
+
     for (int i = 0; needed[i] != NULL; i++) {
         DEBUG("%s: looking up %s in %s",
               si->name, name, needed[i]->name);
@@ -944,14 +958,27 @@ static int soinfo_relocate(soinfo* si, ElfW(Rela)* rela, unsigned count, soinfo*
     ElfW(Addr) sym_addr = 0;
     const char* sym_name = NULL;
 
-    DEBUG("Processing '%s' relocation at index %zd", si->name, idx);
     if (type == 0) { // R_*_NONE
+      DEBUG("Processing '%s' relocation at index %zd", si->name, idx);
       continue;
     }
+
     if (sym != 0) {
       sym_name = reinterpret_cast<const char*>(si->strtab + si->symtab[sym].st_name);
+
+      DEBUG("Processing '%s' relocation at index %zd sym_name:%s", si->name, idx, sym_name);
+
       s = soinfo_do_lookup(si, sym_name, &lsi, needed);
       if (s == NULL) {
+
+        size_t i;
+        for (i = 0; kIgnoreSymbols[i] != NULL; ++i) {
+          if (strcmp(sym_name, kIgnoreSymbols[i]) == 0)
+            break;
+        }
+        if (kIgnoreSymbols[i] != NULL)
+          continue;
+
         // We only allow an undefined symbol if this is a weak reference...
         s = &si->symtab[sym];
         if (ELF_ST_BIND(s->st_info) != STB_WEAK) {
@@ -1188,7 +1215,7 @@ static int soinfo_relocate(soinfo* si, ElfW(Rela)* rela, unsigned count, soinfo*
 #endif
 
     default:
-      DL_ERR("unknown reloc type %d @ %p (%zu)", type, rela, idx);
+      DL_ERR("unknown reloc type %d @ %p (%zu) sym_name:%s", type, rela, idx, sym_name);
       return -1;
     }
   }
@@ -1209,14 +1236,27 @@ static int soinfo_relocate(soinfo* si, ElfW(Rel)* rel, unsigned count, soinfo* n
         ElfW(Addr) sym_addr = 0;
         const char* sym_name = NULL;
 
-        DEBUG("Processing '%s' relocation at index %zd", si->name, idx);
         if (type == 0) { // R_*_NONE
+            DEBUG("Processing '%s' relocation at index %zd", si->name, idx);
             continue;
         }
+
         if (sym != 0) {
             sym_name = reinterpret_cast<const char*>(si->strtab + si->symtab[sym].st_name);
+
+            DEBUG("Processing '%s' relocation at index %zd sym_name:%s", si->name, idx, sym_name);
+
             s = soinfo_do_lookup(si, sym_name, &lsi, needed);
             if (s == NULL) {
+
+                size_t i;
+                for (i = 0; kIgnoreSymbols[i] != NULL; ++i) {
+                  if (strcmp(sym_name, kIgnoreSymbols[i]) == 0)
+                    break;
+                }
+                if (kIgnoreSymbols[i] != NULL)
+                  continue;
+
                 // We only allow an undefined symbol if this is a weak reference...
                 s = &si->symtab[sym];
                 if (ELF_ST_BIND(s->st_info) != STB_WEAK) {
@@ -1384,8 +1424,35 @@ static int soinfo_relocate(soinfo* si, ElfW(Rel)* rel, unsigned count, soinfo* n
             *reinterpret_cast<ElfW(Addr)*>(reloc) += si->base;
             break;
 
+        case R_386_TLS_TPOFF:
+        case R_386_TLS_IE:
+        case R_386_TLS_GOTIE:
+        case R_386_TLS_LE:
+        case R_386_TLS_GD:
+        case R_386_TLS_LDM:
+
+        case R_386_TLS_GD_32:
+        case R_386_TLS_GD_PUSH:
+        case R_386_TLS_GD_CALL:
+        case R_386_TLS_GD_POP:
+        case R_386_TLS_LDM_32:
+        case R_386_TLS_LDM_PUSH:
+        case R_386_TLS_LDM_CALL:
+        case R_386_TLS_LDM_POP:
+        case R_386_TLS_LDO_32:
+        case R_386_TLS_IE_32:
+        case R_386_TLS_LE_32:
+        case R_386_TLS_DTPMOD32:
+        case R_386_TLS_DTPOFF32:
+        case R_386_TLS_TPOFF32:
+        case R_386_TLS_GOTDESC:
+        case R_386_TLS_DESC_CALL:
+        case R_386_TLS_DESC:
+            count_relocation(kRelocRelative);
+            break;
+
         default:
-            DL_ERR("unknown reloc type %d @ %p (%zu)", type, rel, idx);
+            DL_ERR("unknown reloc type %d @ %p (%zu) Offset:%x", type, rel, idx, rel->r_offset);
             return -1;
         }
     }
@@ -1429,6 +1496,15 @@ static bool mips_relocate_got(soinfo* si, soinfo* needed[]) {
         soinfo* lsi;
         ElfW(Sym)* s = soinfo_do_lookup(si, sym_name, &lsi, needed);
         if (s == NULL) {
+
+            size_t i;
+            for (i = 0; kIgnoreSymbols[i] != NULL; ++i) {
+              if (strcmp(sym_name, kIgnoreSymbols[i]) == 0)
+                break;
+            }
+            if (kIgnoreSymbols[i] != NULL)
+              continue;
+
             // We only allow an undefined symbol if this is a weak reference.
             s = &symtab[g];
             if (ELF_ST_BIND(s->st_info) != STB_WEAK) {
@@ -2256,6 +2332,23 @@ static ElfW(Addr) __linker_init_post_relocation(KernelArgumentBlock& args, ElfW(
     return si->entry;
 }
 
+static void __linker_init_for_CARruntime(void) {
+  const char* ldpath_env = NULL;
+  const char* ldpreload_env = NULL;
+
+  ldpath_env = linker_env_get("CAR_COMPONENT_PATH");
+  ldpreload_env = linker_env_get("CAR_COMPONENT_PRELOAD");
+
+  DL_WARN("LD_LIBRARY_PATH: %s \nLD_PRELOAD: %s\n", ldpath_env, ldpreload_env);
+
+  // Use LD_LIBRARY_PATH and LD_PRELOAD (but only if we aren't setuid/setgid).
+  parse_LD_LIBRARY_PATH(ldpath_env);
+  parse_LD_PRELOAD(ldpreload_env);
+
+
+}
+
+
 /* Compute the load-bias of an existing executable. This shall only
  * be used to compute the load bias of an executable or shared library
  * that was loaded by the kernel itself.
@@ -2295,6 +2388,7 @@ extern "C" ElfW(Addr) __linker_init(void* raw_args) {
   solist = get_libdl_info();
   sonext = get_libdl_info();
 
+#if 0
   KernelArgumentBlock args(raw_args);
 
   ElfW(Addr) linker_addr = args.getauxval(AT_BASE);
@@ -2348,4 +2442,8 @@ extern "C" ElfW(Addr) __linker_init(void* raw_args) {
 
   // Return the address that the calling assembly stub should jump to.
   return start_address;
+#endif
+  __linker_init_for_CARruntime();
+
+  return 0;
 }

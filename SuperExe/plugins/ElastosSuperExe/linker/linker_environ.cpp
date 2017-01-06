@@ -173,6 +173,9 @@ void linker_env_init(KernelArgumentBlock& args) {
 }
 
 const char* linker_env_get(const char* name) {
+  return getenv(name);
+
+#if 0
   if (name == NULL || name[0] == '\0') {
     return NULL;
   }
@@ -187,4 +190,5 @@ const char* linker_env_get(const char* name) {
     }
   }
   return NULL;
+#endif
 }

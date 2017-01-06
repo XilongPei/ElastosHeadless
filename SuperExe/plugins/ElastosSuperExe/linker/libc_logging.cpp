@@ -80,7 +80,8 @@ int __libc_format_buffer(char* buffer, size_t buffer_size, const char* format, .
   va_list ap;
 
   va_start(ap, format);
-  ret = snprintf(buffer, buffer_size, format, ap);
+
+  ret = vsnprintf(buffer, buffer_size-1, format, ap);
   va_end(ap);
   return (ret);
 }
@@ -90,7 +91,7 @@ int __libc_format_fd(int fd, const char* format, ...) {
   va_list ap;
 
   va_start(ap, format);
-  ret = printf(format, ap);
+  ret = vprintf(format, ap);
   va_end(ap);
   return (ret);
 }
@@ -100,8 +101,9 @@ int __libc_format_log(int priority, const char* tag, const char* format, ...) {
   va_list ap;
 
   va_start(ap, format);
-  printf("TAG:%s", tag);
-  ret = printf(format, ap);
+  printf("TAG:%s ", tag);
+  ret = vprintf(format, ap);
+  printf("\n");
   va_end(ap);
   return (ret);
 }

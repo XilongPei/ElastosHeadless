@@ -48,10 +48,10 @@
 #define DL_WARN(fmt, x...) \
     do { \
       __libc_format_log(ANDROID_LOG_WARN, "linker", fmt, ##x); \
-      __libc_format_fd(2, "WARNING: linker: "); \
-      __libc_format_fd(2, fmt, ##x); \
-      __libc_format_fd(2, "\n"); \
     } while (false)
+//      __libc_format_fd(2, "WARNING: linker: "); \
+//      __libc_format_fd(2, fmt, ##x); \
+//      __libc_format_fd(2, "\n"); \
 
 #if defined(__LP64__)
 #define ELFW(what) ELF64_ ## what

@@ -48,6 +48,8 @@ extern int          dlcloseCAR(void*  handle);
 extern const char*  dlerrorCAR(void);
 extern void*        dlsymCAR(void*  handle, const char*  symbol);
 extern int          dladdrCAR(const void* addr, Dl_info *info);
+extern void         initLoaderCAR();
+
 
 enum {
 #if defined(__LP64__)

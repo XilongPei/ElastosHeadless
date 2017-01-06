@@ -938,6 +938,8 @@ int mk_superexe_stage30(struct mk_plugin *plugin,
     }
 
     mk_info("car_name:%s\nquery_string:%s\n", superexe_conf->car_name, superexe_conf->query_string);
+    initLoaderCAR();
+
     //mk_info(reflectCAR(superexe_conf->car_name));
 //    if (reflectCAR("/home/xilong/work/Elastos5/Targets/rdk/x86.gnu.android.dbg/bin/Elastos.Runtime.eco") == NULL) {
     if (dlopenCAR("/home/xilong/work/Elastos5/Targets/rdk/x86.gnu.android.dbg/bin/Elastos.Runtime.eco", 2) == NULL) {

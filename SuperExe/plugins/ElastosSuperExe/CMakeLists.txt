@@ -78,9 +78,11 @@ set(src
     linker/linker_phdr.cpp
     linker/rt.cpp
     linker/libc_logging.cpp
+    linker/pthread_internals.cpp
 
-    #linker has not its own version of crtbegin
-    #linker/arch/x86/begin.c
+    #linker has not its own version of crtbegin, but it has to be initialized
+    linker/arch/x86/begin.c
+    linker/atexit.c
     )
 
 add_subdirectory(conf)
