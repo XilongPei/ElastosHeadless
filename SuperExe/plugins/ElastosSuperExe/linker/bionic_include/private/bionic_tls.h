@@ -34,6 +34,14 @@
 #include "bionic_macros.h"
 #include "__get_tls.h"
 
+#define _POSIX_THREAD_DESTRUCTOR_ITERATIONS 4 /* the minimum mandated by POSIX */
+#define PTHREAD_DESTRUCTOR_ITERATIONS _POSIX_THREAD_DESTRUCTOR_ITERATIONS
+#define _POSIX_THREAD_KEYS_MAX 128            /* the minimum mandated by POSIX */
+#define PTHREAD_KEYS_MAX _POSIX_THREAD_KEYS_MAX
+#define _POSIX_THREAD_THREADS_MAX 64          /* the minimum mandated by POSIX */
+#define PTHREAD_THREADS_MAX                   /* bionic has no specific limit */
+
+
 __BEGIN_DECLS
 
 /** WARNING WARNING WARNING

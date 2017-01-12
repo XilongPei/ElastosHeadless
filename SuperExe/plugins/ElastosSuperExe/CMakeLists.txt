@@ -79,6 +79,7 @@ set(src
     linker/rt.cpp
     linker/libc_logging.cpp
     linker/pthread_internals.cpp
+    linker/libc_init_common.cpp
 
     #linker has not its own version of crtbegin, but it has to be initialized
     linker/arch/x86/begin.c

@@ -26,43 +26,20 @@
  * SUCH DAMAGE.
  */
 
+#ifndef _PRIVATE_SSP_H
+#define _PRIVATE_SSP_H
+
 #include <stdint.h>
 #include <sys/cdefs.h>
 
-extern unsigned __linker_init(void* raw_args);
+__BEGIN_DECLS
 
-void _startLoaderCAR() {
-  void (*start)(void);
+/* GCC uses this on ARM and MIPS; we use it on x86 to set the guard in TLS. */
+extern uintptr_t __stack_chk_guard;
 
-  // we can't get args from startup program
-  //void* raw_args = (void*) ((uintptr_t) __builtin_frame_address(0) + sizeof(void*));
-  //
-  struct tag_raw_args {
-    int argc;
-    char** argv;
-    char** envp
-  } raw_args;
+/* GCC calls this if a stack guard check fails. */
+extern void __stack_chk_fail();
 
-  raw_args.argc = 0,
-  raw_args.argv = 0,
-  raw_args.envp = 0,
-  start = (void(*)(void))__linker_init((void *)&raw_args);
+__END_DECLS
 
-#if 0
-  /* linker init returns (%eax) the _entry address in the main image */
-  /* entry point expects sp to point to raw_args */
-
-  __asm__ (
-     "mov %0, %%esp\n\t"
-     "jmp *%1\n\t"
-     : : "r"(raw_args), "r"(start) :
-  );
 #endif
-  /* Unreachable */
-}
-
-/* Since linker has its own version of crtbegin (this file) it should have */
-/* own version of __stack_chk_fail_local for the case when it's built with */
-/* stack protector feature */
-
-//#include "arch-x86/bionic/__stack_chk_fail_local.h"

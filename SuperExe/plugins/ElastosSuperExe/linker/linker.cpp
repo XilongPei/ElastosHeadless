@@ -2332,9 +2332,19 @@ static ElfW(Addr) __linker_init_post_relocation(KernelArgumentBlock& args, ElfW(
     return si->entry;
 }
 
-static void __linker_init_for_CARruntime(void) {
+static void __linker_init_for_CARruntime(KernelArgumentBlock& args) {
   const char* ldpath_env = NULL;
   const char* ldpreload_env = NULL;
+
+    /* NOTE: we store the args pointer on a special location
+     *       of the temporary TLS area in order to pass it to
+     *       the C Library's runtime initializer.
+     *
+     *       The initializer must clear the slot and reset the TLS
+     *       to point to a different location to ensure that no other
+     *       shared library constructor can access it.
+     */
+  __libc_init_tls(args);
 
   ldpath_env = linker_env_get("CAR_COMPONENT_PATH");
   ldpreload_env = linker_env_get("CAR_COMPONENT_PRELOAD");
@@ -2443,7 +2453,10 @@ extern "C" ElfW(Addr) __linker_init(void* raw_args) {
   // Return the address that the calling assembly stub should jump to.
   return start_address;
 #endif
-  __linker_init_for_CARruntime();
+  KernelArgumentBlock args(raw_args);
+  args.abort_message_ptr = &g_abort_message;
+
+  __linker_init_for_CARruntime(args);
 
   return 0;
 }
