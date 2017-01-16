@@ -39,10 +39,10 @@
 #include <unistd.h>
 
 // Private C library headers.
-#include "private/bionic_tls.h"
-#include "private/KernelArgumentBlock.h"
-#include "private/ScopedPthreadMutexLocker.h"
-#include "private/ScopedFd.h"
+#include "bionic_tls.h"
+#include "KernelArgumentBlock.h"
+#include "ScopedPthreadMutexLocker.h"
+#include "ScopedFd.h"
 
 #include "linker.h"
 #include "linker_debug.h"

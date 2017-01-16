@@ -35,7 +35,7 @@
 #include <android/dlext.h>
 #include <sys/stat.h>
 
-#include "private/libc_logging.h"
+#include "libc_logging.h"
 #include "linked_list.h"
 
 #define DL_ERR(fmt, x...) \

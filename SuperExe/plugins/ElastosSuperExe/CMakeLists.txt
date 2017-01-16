@@ -12,7 +12,14 @@ include_directories(ElastosRuntime/rdk/inc)
 include_directories(ElastosRuntime/rdk/PortingLayer)
 include_directories(ElastosRuntime/ElRuntimeAPI)
 
-include_directories(linker/bionic_include)
+include_directories(linker/bionic/libc/include)
+include_directories(linker/bionic/libc/arch-common)
+include_directories(linker/bionic/libc/arch-x86/include)
+include_directories(linker/bionic/libc/bionic)
+include_directories(linker/bionic/libc/private)
+include_directories(linker/bionic/libc/kernel/uapi)
+include_directories(linker/bionic/libc)
+include_directories(linker/include)
 
 #MODULE_CPPFLAGS := -std=c++11
 
@@ -79,6 +86,7 @@ set(src
     linker/rt.cpp
     linker/libc_logging.cpp
     linker/pthread_internals.cpp
+    linker/thread_private.cpp
     linker/libc_init_common.cpp
 
     #linker has not its own version of crtbegin, but it has to be initialized

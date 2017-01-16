@@ -6,6 +6,6 @@
 #define __ELALLOC_H__
 
 #include <malloc.h>
-#include <new>
+//#include <new>
 
 #endif //__ELALLOC_H__

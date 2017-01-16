@@ -35,7 +35,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "stdlib/atexit.h"
-#include "private/thread_private.h"
+#include "thread_private.h"
 
 struct atexit *__atexit;
 static int restartloop;

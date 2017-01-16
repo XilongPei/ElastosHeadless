@@ -23,10 +23,10 @@
 #include <string.h>
 #include <android/dlext.h>
 
-#include <bionic/pthread_internal.h>
-#include "private/bionic_tls.h"
-#include "private/ScopedPthreadMutexLocker.h"
-#include "private/ThreadLocalBuffer.h"
+#include <pthread_internal.h>
+#include "bionic_tls.h"
+#include "ScopedPthreadMutexLocker.h"
+#include "ThreadLocalBuffer.h"
 #include "linker_debug.h"
 #include "elf.h"
 

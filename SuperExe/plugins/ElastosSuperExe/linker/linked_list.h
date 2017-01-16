@@ -17,7 +17,7 @@
 #ifndef __LINKED_LIST_H
 #define __LINKED_LIST_H
 
-#include "private/bionic_macros.h"
+#include "bionic_macros.h"
 
 template<typename T>
 struct LinkedListEntry {
