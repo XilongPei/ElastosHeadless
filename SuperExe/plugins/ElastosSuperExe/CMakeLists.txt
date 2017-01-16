@@ -88,6 +88,9 @@ set(src
     linker/pthread_internals.cpp
     linker/thread_private.cpp
     linker/libc_init_common.cpp
+    linker/findfp.c
+    linker/fflush.c
+    linker/stdio.c
 
     #linker has not its own version of crtbegin, but it has to be initialized
     linker/arch/x86/begin.c
