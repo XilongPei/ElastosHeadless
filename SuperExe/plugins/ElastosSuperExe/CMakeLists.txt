@@ -20,11 +20,13 @@ include_directories(linker/bionic/libc/private)
 include_directories(linker/bionic/libc/kernel/uapi)
 include_directories(linker/bionic/libc)
 include_directories(linker/include)
+include_directories(linker/bionic/libc/kernel/uapi/asm-x86)
 
 #MODULE_CPPFLAGS := -std=c++11
 
 add_definitions(-std=c++0x -fpermissive -Wno-permissive)
 
+add_definitions(-DANDROID_SMP=1)
 
 set(src
     SuperExeStaticMain.cpp
