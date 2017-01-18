@@ -202,7 +202,7 @@ int pthread_create(pthread_t* thread_out, pthread_attr_t const* attr,
   // This also provides the memory barrier we need to ensure that all
   // memory accesses previously performed by this thread are visible to
   // the new thread.
-  pthread_mutex_init(&thread->startup_handshake_mutex, NULL);
+  bionic_pthread_mutex_init(&thread->startup_handshake_mutex, NULL);
   pthread_mutex_lock(&thread->startup_handshake_mutex);
 
   thread->start_routine = start_routine;

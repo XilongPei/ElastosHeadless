@@ -30,21 +30,6 @@
 #include "linker_debug.h"
 #include "elf.h"
 
-/////////////////////
-#if defined(__LP64__)
-  #define __RESERVED_INITIALIZER , {0}
-#else
-  #define __RESERVED_INITIALIZER
-#endif
-
-#define  __PTHREAD_MUTEX_INIT_VALUE            0
-#define  __PTHREAD_RECURSIVE_MUTEX_INIT_VALUE  0x4000
-#define  __PTHREAD_ERRORCHECK_MUTEX_INIT_VALUE 0x8000
-
-//#define  PTHREAD_MUTEX_INITIALIZER             {__PTHREAD_MUTEX_INIT_VALUE __RESERVED_INITIALIZER}
-#define  PTHREAD_RECURSIVE_MUTEX_INITIALIZER   {__PTHREAD_RECURSIVE_MUTEX_INIT_VALUE __RESERVED_INITIALIZER}
-#define  PTHREAD_ERRORCHECK_MUTEX_INITIALIZER  {__PTHREAD_ERRORCHECK_MUTEX_INIT_VALUE __RESERVED_INITIALIZER}
-/////////////////////
 
 /* This file hijacks the symbols stubbed out in libdl.so. */
 
@@ -275,10 +260,11 @@ soinfo* get_libdl_info() {
 }
 
 extern "C" void _startLoaderCAR();
+extern "C" int my_pthread_mutex_init(pthread_mutex_t* mutex, const pthread_mutexattr_t* attr);
 void initLoaderCAR()
 {
   //init_g_dl_mutex
-  pthread_mutex_init(&g_dl_mutex, NULL);
+  bionic_pthread_mutex_init(&g_dl_mutex, NULL);
 
   //x86 begin.c
   _startLoaderCAR();

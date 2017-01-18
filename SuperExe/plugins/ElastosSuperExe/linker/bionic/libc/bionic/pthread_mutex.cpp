@@ -263,7 +263,7 @@ int pthread_mutexattr_getpshared(const pthread_mutexattr_t* attr, int* pshared) 
     return 0;
 }
 
-int pthread_mutex_init(pthread_mutex_t* mutex, const pthread_mutexattr_t* attr) {
+int bionic_pthread_mutex_init(pthread_mutex_t* mutex, const pthread_mutexattr_t* attr) {
     if (__predict_true(attr == NULL)) {
         mutex->value = MUTEX_TYPE_BITS_NORMAL;
         return 0;

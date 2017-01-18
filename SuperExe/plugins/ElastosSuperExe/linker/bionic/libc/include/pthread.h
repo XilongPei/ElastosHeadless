@@ -205,7 +205,7 @@ int pthread_mutexattr_setpshared(pthread_mutexattr_t*, int) __nonnull((1));
 int pthread_mutexattr_settype(pthread_mutexattr_t*, int) __nonnull((1));
 
 int pthread_mutex_destroy(pthread_mutex_t*) __nonnull((1));
-int pthread_mutex_init(pthread_mutex_t*, const pthread_mutexattr_t*) __nonnull((1));
+int bionic_pthread_mutex_init(pthread_mutex_t*, const pthread_mutexattr_t*) __nonnull((1));
 int pthread_mutex_lock(pthread_mutex_t*) /* __nonnull((1)) */;
 int pthread_mutex_timedlock(pthread_mutex_t*, const struct timespec*) __nonnull((1, 2));
 int pthread_mutex_trylock(pthread_mutex_t*) __nonnull((1));
