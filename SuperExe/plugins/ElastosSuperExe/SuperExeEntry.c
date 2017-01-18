@@ -945,10 +945,10 @@ int mk_superexe_stage30(struct mk_plugin *plugin,
     if (dlopenCAR("/home/xilong/work/Elastos5/Targets/rdk/x86.gnu.android.dbg/bin/Elastos.Runtime.eco", 2) == NULL) {
     //if (dlopen("/home/xilong/work/Elastos5/Build/Prebuilt_x86/Linux/usr/lib/libm.so", 2) == NULL) {
 
-
-        mk_info("xxxxxxxxxxx: %s\n", dlerrorCAR());
+        printf("xxxxxxxxxxx: %s\n", dlerrorCAR());
     }
-    mk_info("==========================\n");
+
+    printf("==========================\n");
 
     if (mk_dirhtml_init(cs, sr)) {
         /*
