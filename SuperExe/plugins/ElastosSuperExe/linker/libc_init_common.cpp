@@ -52,50 +52,6 @@ extern abort_msg_t** __abort_message_ptr;
 extern "C" int __set_tls(void* ptr);
 extern "C" int __set_tid_address(int* tid_address);
 
-#if 0
-// This code is used both by each new pthread and the code that initializes the main thread.
-void __init_tls(pthread_internal_t* thread) {
-  if (thread->user_allocated_stack()) {
-    // We don't know where the user got their stack, so assume the worst and zero the TLS area.
-    memset(&thread->tls[0], 0, BIONIC_TLS_SLOTS * sizeof(void*));
-  }
-
-  // Slot 0 must point to itself. The x86 Linux kernel reads the TLS from %fs:0.
-  thread->tls[TLS_SLOT_SELF] = thread->tls;
-  thread->tls[TLS_SLOT_THREAD_ID] = thread;
-  // GCC looks in the TLS for the stack guard on x86, so copy it there from our global.
-  thread->tls[TLS_SLOT_STACK_GUARD] = (void*) __stack_chk_guard;
-}
-
-int __init_thread(pthread_internal_t* thread, bool add_to_thread_list) {
-  int error = 0;
-
-  // Set the scheduling policy/priority of the thread.
-  if (thread->attr.sched_policy != SCHED_NORMAL) {
-    sched_param param;
-    param.sched_priority = thread->attr.sched_priority;
-    if (sched_setscheduler(thread->tid, thread->attr.sched_policy, &param) == -1) {
-#if __LP64__
-      // For backwards compatibility reasons, we only report failures on 64-bit devices.
-      error = errno;
-#endif
-//      __libc_format_log(ANDROID_LOG_WARN, "libc",
-//                        "pthread_create sched_setscheduler call failed: %s", strerror(errno));
-    }
-  }
-
-  thread->cleanup_stack = NULL;
-
-  if (add_to_thread_list) {
-    _pthread_internal_add(thread);
-  }
-
-  return error;
-}
-
-ElfW(auxv_t)* __libc_auxv = NULL;
-#endif
-
 void __libc_init_vdso();
 
 // Not public, but well-known in the BSDs.
@@ -147,20 +103,6 @@ void __libc_init_tls(KernelArgumentBlock& args) {
 
   __init_alternate_signal_stack(&main_thread);
 }
-
-#if 0
-void __init_alternate_signal_stack(pthread_internal_t* thread) {
-  // Create and set an alternate signal stack.
-  stack_t ss;
-  ss.ss_sp = mmap(NULL, SIGSTKSZ, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
-  if (ss.ss_sp != MAP_FAILED) {
-    ss.ss_size = SIGSTKSZ;
-    ss.ss_flags = 0;
-    sigaltstack(&ss, NULL);
-    thread->alternate_signal_stack = ss.ss_sp;
-  }
-}
-#endif
 
 void __libc_init_common(KernelArgumentBlock& args) {
   // Initialize various globals.
